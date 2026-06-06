@@ -146,6 +146,7 @@ class _EmptyChat extends StatelessWidget {
       'Write me a cold DM for a local restaurant.',
       'I want to skip training. Talk me out of it.',
       "I'm thinking of switching to a new project. Stop me.",
+      'Analyze my last 7 days. Be brutal — name the pattern.',
       "What's my single most important task right now?",
     ];
     return ListView(

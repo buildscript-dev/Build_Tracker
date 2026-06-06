@@ -62,6 +62,10 @@ class StatsScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
+              const SectionLabel('Performance report'),
+              const SizedBox(height: 10),
+              _ReportPanel(r: s.report()),
+              const SizedBox(height: 16),
               const SectionLabel('Weight trend'),
               const SizedBox(height: 10),
               Panel(
@@ -89,6 +93,84 @@ class StatsScreen extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ReportPanel extends StatelessWidget {
+  final PerformanceReport r;
+  const _ReportPanel({required this.r});
+
+  @override
+  Widget build(BuildContext context) {
+    if (r.loggedDays == 0) {
+      return Panel(
+        child: const Text(
+            'No data yet. Log a day and the report wakes up.',
+            style: TextStyle(color: AppTheme.textLo)),
+      );
+    }
+    final scoreColor = r.avgScore >= 0.8
+        ? AppTheme.green
+        : r.avgScore >= 0.5
+            ? AppTheme.amber
+            : AppTheme.red;
+    final verdict = r.avgScore >= 0.8
+        ? 'Locked in. Hold the line.'
+        : r.avgScore >= 0.5
+            ? 'Half-committed. Half is how you got here. Close the gap.'
+            : 'You are coasting. Numbers do not lie. Fix it today.';
+    return Panel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text('${(r.avgScore * 100).round()}%',
+                  style: TextStyle(
+                      color: scoreColor,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w900,
+                      height: 1)),
+              const SizedBox(width: 8),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 5),
+                child: Text('avg proven score',
+                    style: TextStyle(color: AppTheme.textLo, fontSize: 12)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _line('Win rate', '${(r.winRate * 100).round()}%'),
+          _line('Weed-free', '${(r.weedFreeRate * 100).round()}% of days'),
+          _line('Avg proposals/day', r.avgProposals.toStringAsFixed(1)),
+          _line('Reported streak', '${r.reportedStreak} days'),
+          _line('Biggest leak', r.topBlocker),
+          const SizedBox(height: 10),
+          Text(verdict,
+              style: TextStyle(
+                  color: scoreColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  height: 1.3)),
+        ],
+      ),
+    );
+  }
+
+  Widget _line(String k, String v) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 3),
+        child: Row(
+          children: [
+            Text(k,
+                style: const TextStyle(color: AppTheme.textMid, fontSize: 13)),
+            const Spacer(),
+            Text(v,
+                style: const TextStyle(
+                    color: AppTheme.textHi,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800)),
+          ],
+        ),
+      );
 }
 
 class _DayRow extends StatelessWidget {

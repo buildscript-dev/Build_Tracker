@@ -43,7 +43,10 @@ class TodayScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _PriorityBanner(s: s),
               const SizedBox(height: 16),
-              _DayProgress(completion: day.completion),
+              _DayProgress(
+                  completion: day.completion,
+                  proven: day.score,
+                  unproven: day.unprovenCount),
               const SizedBox(height: 16),
               const _MorningCheckIn(),
               const SizedBox(height: 16),
@@ -279,11 +282,17 @@ class _PriorityBanner extends StatelessWidget {
 
 class _DayProgress extends StatelessWidget {
   final double completion;
-  const _DayProgress({required this.completion});
+  final double proven;
+  final int unproven;
+  const _DayProgress({
+    required this.completion,
+    required this.proven,
+    required this.unproven,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final pct = (completion * 100).round();
+    final pct = (proven * 100).round();
     final color = pct >= 80
         ? AppTheme.green
         : pct >= 40
@@ -305,14 +314,20 @@ class _DayProgress extends StatelessWidget {
               const SizedBox(width: 8),
               const Padding(
                 padding: EdgeInsets.only(bottom: 6),
-                child: Text('day won',
+                child: Text('proven',
                     style:
                         TextStyle(color: AppTheme.textLo, fontSize: 13)),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Bar(completion, color: color),
+          Bar(proven, color: color),
+          if (unproven > 0) ...[
+            const SizedBox(height: 8),
+            Text(
+                '$unproven task${unproven == 1 ? '' : 's'} checked without proof — half credit. Add a photo.',
+                style: const TextStyle(color: AppTheme.red, fontSize: 11.5)),
+          ],
         ],
       ),
     );

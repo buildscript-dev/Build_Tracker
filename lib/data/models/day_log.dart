@@ -72,6 +72,29 @@ class DayLog {
     return done / scored.length;
   }
 
+  /// Proof-weighted score (0..1). "Prove it or it didn't happen": a bool task
+  /// checked off WITHOUT photo proof only earns half credit. Count tasks score
+  /// by progress. This is the number the coach trusts, not raw completion.
+  double get score {
+    final scored =
+        tasks.where((t) => !(t.isCount && t.target == 0)).toList();
+    if (scored.isEmpty) return 0;
+    double sum = 0;
+    for (final t in scored) {
+      if (t.isCount) {
+        sum += t.progress.clamp(0.0, 1.0);
+      } else if (t.isComplete) {
+        sum += t.proofPath != null ? 1.0 : 0.5;
+      }
+    }
+    return sum / scored.length;
+  }
+
+  /// How many completed bool tasks are missing proof (the "unproven" count).
+  int get unprovenCount => tasks
+      .where((t) => !t.isCount && t.isComplete && t.proofPath == null)
+      .length;
+
   int completedCount(String category) => tasks
       .where((t) => t.category == category && t.isComplete)
       .length;

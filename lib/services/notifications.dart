@@ -48,7 +48,7 @@ class Notifications {
       case 'TRAIN':
         return 'Hit the bag. A soft body builds a soft mind.';
       case 'REPORT':
-        return 'Report the day. Honest. The chain cannot break.';
+        return 'Nightly check-in. Open the coach, report honest, prove it. The chain cannot break.';
       case 'SLEEP':
         return '21:30. Shut it down. Tomorrow is won tonight.';
       default:

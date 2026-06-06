@@ -33,10 +33,11 @@ class AppState extends ChangeNotifier {
     startDate = storage.startDate();
     profile = storage.profile();
     final key = dateKey();
-    today = storage.loadDay(key) ?? DayLog.fresh(key, currentDay);
+    final dn = currentDay < 1 ? 1 : currentDay;
+    today = storage.loadDay(key) ?? DayLog.fresh(key, started ? dn : 0);
     // Keep the stored day number in sync once the protocol is armed.
-    if (started && today.day != currentDay) {
-      today.day = currentDay;
+    if (started && today.day != dn) {
+      today.day = dn;
       await storage.saveDay(today);
     }
     clients = storage.allClients();
@@ -64,7 +65,7 @@ class AppState extends ChangeNotifier {
   Future<void> startProtocol(DateTime start) async {
     startDate = start;
     await storage.setStartDate(start);
-    today.day = currentDay;
+    today.day = currentDay < 1 ? 1 : currentDay;
     await _persistDay();
     notifyListeners();
   }
@@ -225,6 +226,62 @@ class AppState extends ChangeNotifier {
   // ---- stats ----
   List<DayLog> history() => storage.allDays();
 
+  /// Compact last-7-days digest fed to the coach so it can confront patterns
+  /// ("day 4 you skipped outreach again") instead of reacting to today only.
+  String historyDigest() {
+    final days = history();
+    if (days.isEmpty) return 'No days logged yet.';
+    final recent =
+        days.length <= 7 ? days : days.sublist(days.length - 7);
+    return recent.map((d) {
+      final v = d.verdict.isEmpty ? '—' : d.verdict;
+      final prop = d.task('proposals')?.value ?? 0;
+      final dm = d.task('dms')?.value ?? 0;
+      final blk = d.blocker.isEmpty ? '-' : d.blocker;
+      final unproven = d.unprovenCount > 0 ? ' [${d.unprovenCount} unproven]' : '';
+      return 'Day ${d.day}: score ${(d.score * 100).round()}%$unproven · $v · '
+          'weed-free ${d.weedFree} · prop $prop dm $dm · blocker: $blk';
+    }).join('\n');
+  }
+
+  /// Computed performance metrics across all logged days. No AI — pure numbers
+  /// for the report panel.
+  PerformanceReport report() {
+    final days = history();
+    if (days.isEmpty) return PerformanceReport.empty();
+    final won = days.where((d) => d.verdict == 'won').length;
+    final cleanDays = days.where((d) => d.weedFree).length;
+    final avgScore =
+        days.map((d) => d.score).fold(0.0, (a, b) => a + b) / days.length;
+    final avgProp = days
+            .map((d) => d.task('proposals')?.value ?? 0)
+            .fold(0, (a, b) => a + b) /
+        days.length;
+    // most common non-empty blocker
+    final counts = <String, int>{};
+    for (final d in days) {
+      final b = d.blocker.trim().toLowerCase();
+      if (b.isNotEmpty) counts[b] = (counts[b] ?? 0) + 1;
+    }
+    String topBlocker = '—';
+    int topN = 0;
+    counts.forEach((k, v) {
+      if (v > topN) {
+        topN = v;
+        topBlocker = k;
+      }
+    });
+    return PerformanceReport(
+      loggedDays: days.length,
+      winRate: won / days.length,
+      weedFreeRate: cleanDays / days.length,
+      avgScore: avgScore,
+      avgProposals: avgProp,
+      topBlocker: topBlocker,
+      reportedStreak: streakReported,
+    );
+  }
+
   int get streakReported {
     final days = history()..sort((a, b) => b.day.compareTo(a.day));
     int s = 0;
@@ -300,10 +357,46 @@ Priority: $priorityHeadline.
 Next action: $nextAction.
 Weed-free today: ${t.weedFree}. Weight: ${t.weight ?? '—'}kg.
 Proposals: ${t.task('proposals')?.value ?? 0}/5. DMs: ${t.task('dms')?.value ?? 0}/10.
-Day completion: ${(t.completion * 100).round()}%.
+Proof-weighted score today: ${(t.score * 100).round()}% (${t.unprovenCount} tasks checked WITHOUT proof — do not give full credit for those).
 Reported streak: $streakReported days.
 
-Keep replies short and punchy. Tell the real truth even when it stings.
+RECENT HISTORY (last logged days):
+${historyDigest()}
+
+Use the history to call out repeated patterns by day number. If a task is marked
+done but has no proof, treat it as suspect and demand proof. Keep replies short
+and punchy. Tell the real truth even when it stings.
 ''';
   }
+}
+
+/// Pure computed performance metrics for the Stats report panel.
+class PerformanceReport {
+  final int loggedDays;
+  final double winRate;
+  final double weedFreeRate;
+  final double avgScore;
+  final double avgProposals;
+  final String topBlocker;
+  final int reportedStreak;
+
+  PerformanceReport({
+    required this.loggedDays,
+    required this.winRate,
+    required this.weedFreeRate,
+    required this.avgScore,
+    required this.avgProposals,
+    required this.topBlocker,
+    required this.reportedStreak,
+  });
+
+  factory PerformanceReport.empty() => PerformanceReport(
+        loggedDays: 0,
+        winRate: 0,
+        weedFreeRate: 0,
+        avgScore: 0,
+        avgProposals: 0,
+        topBlocker: '—',
+        reportedStreak: 0,
+      );
 }
