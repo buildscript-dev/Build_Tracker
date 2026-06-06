@@ -9,7 +9,7 @@ import '../data/models/ai_config.dart';
 import '../data/models/profile.dart';
 
 /// Single source of truth for the whole app. Holds today's log, clients,
-/// AI config and chat, and the derived "what should Ankit be doing right now"
+/// AI config and chat, and the derived "what should Build be doing right now"
 /// signal.
 class AppState extends ChangeNotifier {
   final Storage storage;
@@ -22,7 +22,7 @@ class AppState extends ChangeNotifier {
   List<ChatMessage> chat = [];
   bool notificationsEnabled = true;
 
-  /// Null until Ankit hits START. The whole protocol is gated behind this.
+  /// Null until Build hits START. The whole protocol is gated behind this.
   DateTime? startDate;
   late Profile profile;
 
@@ -309,7 +309,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// System prompt that makes the in-app AI act as Ankit's coach with full
+  /// System prompt that makes the in-app AI act as Build's coach with full
   /// context of today AND his psychological profile. This is what makes it feel
   /// "mind-readable" — it knows exactly how he fails and what to leverage.
   String coachSystemPrompt() {
@@ -324,7 +324,7 @@ class AppState extends ChangeNotifier {
         ? profile.oneThing
         : '(not locked yet — force him to commit to ONE thing)';
     return '''
-You are Build Tracker's coach — Ankit's accountability partner for a 21-day
+You are Build Tracker's coach — Build's accountability partner for a 21-day
 rebuild across PHYSICAL, MENTAL, FINANCIAL fronts. He is out of money and must
 earn this month. No coddling.
 

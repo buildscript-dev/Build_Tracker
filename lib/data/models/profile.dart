@@ -1,4 +1,4 @@
-/// Ankit's operator profile. This is what makes the coach "mind-readable": it
+/// Build's operator profile. This is what makes the coach "mind-readable": it
 /// remembers who he is, what derails him, what to leverage, and the single
 /// thing he is locked to. Stored locally and injected into every coach prompt.
 class Profile {
@@ -28,7 +28,7 @@ class Profile {
 
   bool get locked => oneThing.trim().isNotEmpty;
 
-  /// Seeded from the onboarding answers Ankit gave on 2026-06-06.
+  /// Seeded from the onboarding answers Build gave on 2026-06-06.
   factory Profile.seed() => Profile(
         coachStyle: 'drill',
         language: 'Python',

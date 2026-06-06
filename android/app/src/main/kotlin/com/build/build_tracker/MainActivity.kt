@@ -1,4 +1,4 @@
-package com.ankit.build_tracker
+package com.build.build_tracker
 
 import io.flutter.embedding.android.FlutterActivity
 

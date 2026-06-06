@@ -79,7 +79,7 @@ class Storage {
       _settingsBox.put('notifications', v);
 
   // ---- protocol start (the START button) ----
-  /// Null until Ankit arms the protocol. The clock does not run before this.
+  /// Null until Build arms the protocol. The clock does not run before this.
   DateTime? startDate() {
     final ms = _settingsBox.get('startMillis');
     if (ms == null) return null;

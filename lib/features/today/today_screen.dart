@@ -104,7 +104,7 @@ class TodayScreen extends StatelessWidget {
   }
 }
 
-/// THE ONE THING — the single locked focus. Ankit's fatal pattern is switching
+/// THE ONE THING — the single locked focus. Build's fatal pattern is switching
 /// ideas/languages and never finishing; this card exists to stop that. Once
 /// locked it shows as immovable; changing it requires a deliberate confirm.
 class _OneThingCard extends StatefulWidget {

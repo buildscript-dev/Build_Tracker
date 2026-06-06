@@ -1,7 +1,7 @@
 import '../../secrets.dart';
 
 /// Config for one AI provider. Build Tracker speaks to multiple backends so
-/// Ankit can use whatever subscription/engine he has: local Ollama (free, runs
+/// Build can use whatever subscription/engine he has: local Ollama (free, runs
 /// on the RTX 4050), OpenRouter (many models, one key), OpenAI, or Claude.
 class AiConfig {
   String provider; // ollama | openrouter | openai | claude

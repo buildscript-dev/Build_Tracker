@@ -8,7 +8,7 @@ import '../services/notifications.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 
-/// The arming screen. The app is dark until Ankit commits. There is a START
+/// The arming screen. The app is dark until Build commits. There is a START
 /// button and nothing else — no pause, no stop. Once armed, the clock runs to
 /// day 21 and cannot be turned off.
 class StartGate extends StatefulWidget {
@@ -24,7 +24,7 @@ class _StartGateState extends State<StartGate> {
   @override
   void initState() {
     super.initState();
-    // Default chosen by Ankit: tomorrow 05:30.
+    // Default chosen by Build: tomorrow 05:30.
     final t = DateTime.now().add(const Duration(days: 1));
     _start = DateTime(t.year, t.month, t.day, 5, 30);
   }

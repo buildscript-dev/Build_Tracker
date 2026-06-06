@@ -6,7 +6,7 @@ class PlanData {
   static const int totalDays = 21;
 
   /// Current day number (1-based) given the chosen [start] date. Can exceed 21
-  /// if overshooting. The start date is no longer hardcoded — Ankit arms it with
+  /// if overshooting. The start date is no longer hardcoded — Build arms it with
   /// the START button, so the clock only runs once he commits.
   static int dayNumber(DateTime start, [DateTime? now]) {
     final today = now ?? DateTime.now();

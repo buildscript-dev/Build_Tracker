@@ -1,6 +1,6 @@
 # Build Tracker
 
-Cross-platform accountability app that runs Ankit's 21-day rebuild — **physical, mental, financial** — in one place. Brutal, honest, operator-grade. Phone (S24) + Web + Desktop from one Flutter codebase.
+Cross-platform accountability app that runs Build's 21-day rebuild — **physical, mental, financial** — in one place. Brutal, honest, operator-grade. Phone (S24) + Web + Desktop from one Flutter codebase.
 
 > No client = transformation is the job. Land a client and the app flips to **client-first**.
 
